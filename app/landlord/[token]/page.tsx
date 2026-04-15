@@ -30,6 +30,17 @@ export default async function LandlordVerificationPage({
     );
   }
 
+  if (request.expiresAt && request.expiresAt < new Date()) {
+    return (
+      <Shell>
+        <div className="text-center py-16">
+          <p className="text-lg font-semibold text-slate-900">Link expired</p>
+          <p className="mt-2 text-sm text-slate-500">This verification link has expired. Please contact the property manager for a new link.</p>
+        </div>
+      </Shell>
+    );
+  }
+
   if (request.status === "completed" || request.response) {
     return (
       <Shell>

@@ -111,6 +111,8 @@ export async function createVerificationRequest(
   const token = crypto.randomUUID();
   const landlordEmail = entry.landlordEmail ?? null;
 
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
   await db.landlordVerificationRequest.create({
     data: {
       rentalHistoryEntryId: entryId,
@@ -119,6 +121,7 @@ export async function createVerificationRequest(
       token,
       status: "pending",
       sentAt: new Date(),
+      expiresAt,
     },
   });
 

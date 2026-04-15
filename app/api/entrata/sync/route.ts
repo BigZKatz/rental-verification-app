@@ -14,11 +14,12 @@ import { getEntrataApplicationsSince } from "@/lib/entrata";
  * Returns: { synced: number, found: number, syncRunId: string }
  */
 export async function POST(request: NextRequest) {
-  // Auth check — skip if CRON_SECRET is not configured (dev mode)
+  // Auth check — always enforced in production; skipped in development if CRON_SECRET is unset
   const secret = process.env.CRON_SECRET;
-  if (secret) {
+  const isDev = process.env.NODE_ENV === "development";
+  if (secret || !isDev) {
     const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${secret}`) {
+    if (!secret || authHeader !== `Bearer ${secret}`) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
   }

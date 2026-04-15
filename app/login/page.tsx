@@ -1,5 +1,5 @@
 import { signIn } from "@/auth";
-import { Radio } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   return (
@@ -7,10 +7,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
           <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
-            <Radio className="w-6 h-6 text-white" />
+            <ShieldCheck className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">Relay</h1>
-          <p className="text-slate-400 text-sm mt-1">Property Messaging</p>
+          <h1 className="text-2xl font-semibold text-white tracking-wide">VerifyRent</h1>
+          <p className="text-slate-400 text-sm mt-1">Rental Verification Platform</p>
         </div>
 
         <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700/50">

@@ -112,6 +112,7 @@ model LandlordVerificationRequest {
   status               String                       @default("pending")
   sentAt               DateTime?
   completedAt          DateTime?
+  expiresAt            DateTime?
   createdAt            DateTime                     @default(now())
   response             LandlordVerificationResponse?
 }

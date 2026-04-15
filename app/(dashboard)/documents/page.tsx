@@ -52,20 +52,22 @@ export default async function DocumentsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-slate-200 bg-white px-5 py-4">
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-400">Total</p>
-          <p className="mt-1 text-3xl font-bold text-slate-900">{docs.length}</p>
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Total</span>
+          <span className="text-sm font-bold text-slate-900">{docs.length}</span>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-emerald-50 px-5 py-4">
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-400">Extracted</p>
-          <p className="mt-1 text-3xl font-bold text-slate-900">{extractedCount}</p>
+        <div className="rounded-lg border border-slate-200 bg-emerald-50 px-3 py-2 flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Extracted</span>
+          <span className="text-sm font-bold text-emerald-700">{extractedCount}</span>
         </div>
-        <div className={`rounded-xl border border-slate-200 px-5 py-4 ${failedCount > 0 ? "bg-rose-50" : "bg-amber-50"}`}>
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-400">
+        <div className={`rounded-lg border border-slate-200 px-3 py-2 flex items-center gap-2 ${failedCount > 0 ? "bg-rose-50" : "bg-amber-50"}`}>
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">
             {failedCount > 0 ? "Failed" : "Pending"}
-          </p>
-          <p className="mt-1 text-3xl font-bold text-slate-900">{failedCount > 0 ? failedCount : pendingCount}</p>
+          </span>
+          <span className={`text-sm font-bold ${failedCount > 0 ? "text-rose-700" : "text-amber-700"}`}>
+            {failedCount > 0 ? failedCount : pendingCount}
+          </span>
         </div>
       </div>
 

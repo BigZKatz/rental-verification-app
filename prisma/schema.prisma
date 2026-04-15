@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Applicant {
+  id                     String                  @id @default(cuid())
+  entrataApplicationId   String?                 @unique
+  firstName              String
+  lastName               String
+  email                  String?
+  phone                  String
+  dateOfBirth            DateTime?
+  ssnLast4               String?
+  currentAddress         String?
+  consentProvided        Boolean                 @default(false)
+  status                 String                  @default("in_review")
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  rentalHistory     RentalHistoryEntry[]
+  documents         UploadedDocument[]
+  findings          VerificationFinding[]
+  decisions         VerificationDecision[]
+  bankVerifications BankVerification[]
+  publicRecordChecks PublicRecordCheck[]
+  auditLogs         AuditLog[]
+}
+
+model RentalHistoryEntry {
+  id                            String                       @id @default(cuid())
+  applicantId                   String
+  applicant                     Applicant                    @relation(fields: [applicantId], references: [id])
+  addressLine1                  String
+  addressLine2                  String?
+  city                          String
+  state                         String
+  zip                           String
+  landlordName                  String?
+  landlordPhone                 String?
+  landlordEmail                 String?
+  managementCompany             String?
+  monthlyRent                   Int?
+  moveInDate                    DateTime?
+  moveOutDate                   DateTime?
+  reasonForLeaving              String?
+  currentResidence              Boolean                      @default(false)
+  createdAt                     DateTime                     @default(now())
+  updatedAt                     DateTime                     @updatedAt
+  documents                     UploadedDocument[]
+  addressVerifications          AddressVerification[]
+  landlordContactVerifications  LandlordContactVerification[]
+  landlordVerificationRequests  LandlordVerificationRequest[]
+  publicRecordChecks            PublicRecordCheck[]
+  findings                      VerificationFinding[]
+}
+
+model UploadedDocument {
+  id                   String              @id @default(cuid())
+  applicantId          String
+  applicant            Applicant           @relation(fields: [applicantId], references: [id])
+  rentalHistoryEntryId String?
+  rentalHistoryEntry   RentalHistoryEntry? @relation(fields: [rentalHistoryEntryId], references: [id])
+  type                 String
+  fileUrl              String
+  mimeType             String?
+  extractedText        String?
+  extractionStatus     String              @default("pending")
+  createdAt            DateTime            @default(now())
+}
+
+model AddressVerification {
+  id                   String              @id @default(cuid())
+  rentalHistoryEntryId String
+  rentalHistoryEntry   RentalHistoryEntry  @relation(fields: [rentalHistoryEntryId], references: [id])
+  source               String
+  normalizedAddress    String?
+  matchScore           Int?
+  matched              Boolean             @default(false)
+  rawPayload           String?
+  createdAt            DateTime            @default(now())
+}
+
+model LandlordContactVerification {
+  id                   String              @id @default(cuid())
+  rentalHistoryEntryId String
+  rentalHistoryEntry   RentalHistoryEntry  @relation(fields: [rentalHistoryEntryId], references: [id])
+  claimedName          String?
+  claimedPhone         String?
+  claimedEmail         String?
+  verifiedOwnerName    String?
+  verifiedManagerName  String?
+  verifiedPhone        String?
+  verifiedEmail        String?
+  source               String
+  confidenceScore      Int?
+  suspicious           Boolean             @default(false)
+  notes                String?
+  createdAt            DateTime            @default(now())
+}
+
+model LandlordVerificationRequest {
+  id                   String                       @id @default(cuid())
+  rentalHistoryEntryId String
+  rentalHistoryEntry   RentalHistoryEntry           @relation(fields: [rentalHistoryEntryId], references: [id])
+  outreachChannel      String
+  sentTo               String
+  token                String                       @unique
+  status               String                       @default("pending")
+  sentAt               DateTime?
+  completedAt          DateTime?
+  createdAt            DateTime                     @default(now())
+  response             LandlordVerificationResponse?
+}
+
+model LandlordVerificationResponse {
+  id                         String                       @id @default(cuid())
+  requestId                  String                       @unique
+  request                    LandlordVerificationRequest  @relation(fields: [requestId], references: [id])
+  responderName              String?
+  responderTitle             String?
+  responderCompany           String?
+  relationshipToProperty     String?
+  confirmedTenant            Boolean?
+  confirmedMoveInDate        DateTime?
+  confirmedMoveOutDate       DateTime?
+  confirmedMonthlyRent       Int?
+  paymentHistoryRating       String?
+  latePaymentCount           Int?
+  leaseViolations            String?
+  propertyDamage             String?
+  balanceOwed                Int?
+  wouldRentAgain             Boolean?
+  comments                   String?
+  createdAt                  DateTime                     @default(now())
+}
+
+model PublicRecordCheck {
+  id                   String              @id @default(cuid())
+  applicantId          String?
+  applicant            Applicant?          @relation(fields: [applicantId], references: [id])
+  rentalHistoryEntryId String?
+  rentalHistoryEntry   RentalHistoryEntry? @relation(fields: [rentalHistoryEntryId], references: [id])
+  source               String
+  type                 String
+  status               String
+  summary              String?
+  rawPayload           String?
+  createdAt            DateTime            @default(now())
+}
+
+model BankVerification {
+  id                      String    @id @default(cuid())
+  applicantId             String
+  applicant               Applicant @relation(fields: [applicantId], references: [id])
+  provider                String
+  institutionName         String?
+  recurringRentDetected   Boolean   @default(false)
+  estimatedRentAmount     Int?
+  paymentConsistencyScore Int?
+  nsfSignal               Boolean   @default(false)
+  rawPayload              String?
+  createdAt               DateTime  @default(now())
+}
+
+model VerificationFinding {
+  id                   String              @id @default(cuid())
+  applicantId          String
+  applicant            Applicant           @relation(fields: [applicantId], references: [id])
+  rentalHistoryEntryId String?
+  rentalHistoryEntry   RentalHistoryEntry? @relation(fields: [rentalHistoryEntryId], references: [id])
+  category             String
+  severity             String
+  code                 String
+  message              String
+  source               String
+  confidence           Int?
+  createdAt            DateTime            @default(now())
+}
+
+model VerificationDecision {
+  id                 String    @id @default(cuid())
+  applicantId        String
+  applicant          Applicant @relation(fields: [applicantId], references: [id])
+  overallStatus      String
+  confidenceScore    Int
+  manualReviewRequired Boolean @default(true)
+  summary            String?
+  decidedBy          String?
+  createdAt          DateTime  @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  applicantId String
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  actorType   String
+  actorId     String?
+  action      String
+  metadata    String?
+  createdAt   DateTime @default(now())
+}
+
+model SyncRun {
+  id                String   @id @default(cuid())
+  source            String   @default("entrata")
+  status            String   @default("running")  // running | completed | failed
+  applicantsFound   Int      @default(0)
+  applicantsUpserted Int     @default(0)
+  error             String?
+  startedAt         DateTime @default(now())
+  completedAt       DateTime?
+}

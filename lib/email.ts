@@ -80,8 +80,9 @@ export async function sendStaffNotificationEmail({
 </body>
 </html>`,
     });
-  } catch {
+  } catch (err) {
     // Notification failure is non-fatal — do not block the landlord's submission
+    console.error("[email] sendStaffNotificationEmail failed:", err);
   }
 }
 
@@ -110,7 +111,8 @@ export async function sendLandlordVerificationEmail({
       html: buildHtml({ addressLine1, city, state, applicantFirstName, verificationUrl }),
     });
     return true;
-  } catch {
+  } catch (err) {
+    console.error("[email] sendLandlordVerificationEmail failed:", err);
     return false;
   }
 }

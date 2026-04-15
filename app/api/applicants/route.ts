@@ -31,6 +31,13 @@ export async function POST(request: NextRequest) {
   if (!data.phone?.trim()) {
     return Response.json({ error: "Phone is required" }, { status: 422 });
   }
+  // Accept E.164, US local (10-digit), or 11-digit with leading 1
+  if (!/^\+?1?\d{10,14}$/.test(data.phone.replace(/[\s\-().]/g, ""))) {
+    return Response.json({ error: "Phone number format is invalid" }, { status: 422 });
+  }
+  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
+    return Response.json({ error: "Email address format is invalid" }, { status: 422 });
+  }
 
   const applicant = await db.applicant.create({
     data: {

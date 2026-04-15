@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { sendStaffNotificationEmail } from "@/lib/email";
 import { headers } from "next/headers";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export type LandlordFormState = {
   error?: string;
@@ -14,6 +15,13 @@ export async function submitLandlordResponse(
   _prev: LandlordFormState,
   formData: FormData
 ): Promise<LandlordFormState> {
+  const headersList = await headers();
+  const ip = getClientIp(headersList as unknown as Headers);
+  const rl = rateLimit("landlord-form", ip, 5, 10 * 60 * 1000); // 5 per 10 min
+  if (!rl.allowed) {
+    return { error: "Too many submissions from this IP. Please try again later." };
+  }
+
   const request = await db.landlordVerificationRequest.findUnique({
     where: { token },
     include: {
@@ -85,7 +93,6 @@ export async function submitLandlordResponse(
   // Fire staff notification — non-blocking, failure does not affect the landlord's submission
   const entry = request.rentalHistoryEntry;
   const applicant = entry.applicant;
-  const headersList = await headers();
   const host = headersList.get("host") ?? "";
   const protocol = host.startsWith("localhost") ? "http" : "https";
   const origin = `${protocol}://${host}`;

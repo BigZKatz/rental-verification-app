@@ -1,5 +1,30 @@
-export { auth as middleware } from "@/auth";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export default auth((req) => {
+  const { nextUrl, auth: session } = req;
+  const isLoggedIn = !!session?.user;
+
+  // Allow public routes
+  if (
+    nextUrl.pathname.startsWith("/api/auth") ||
+    nextUrl.pathname.startsWith("/_next") ||
+    nextUrl.pathname === "/login" ||
+    nextUrl.pathname.startsWith("/landlord/")
+  ) {
+    return NextResponse.next();
+  }
+
+  // Redirect unauthenticated users to login
+  if (!isLoggedIn) {
+    const loginUrl = new URL("/login", nextUrl);
+    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+});
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon\\.ico|landlord/).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon\\.ico).*)"],
 };

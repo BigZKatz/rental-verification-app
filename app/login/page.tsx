@@ -1,7 +1,13 @@
 import { signIn } from "@/auth";
 import { ShieldCheck } from "lucide-react";
+import { DemoLoginForm } from "./DemoLoginForm";
+
+export const dynamic = "force-dynamic";
 
 export default function LoginPage() {
+  const demoEnabled = !!process.env.DEMO_LOGIN_PASSWORD;
+  const demoEmail = process.env.DEMO_LOGIN_EMAIL ?? "demo@verifyrent.app";
+
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
@@ -33,6 +39,13 @@ export default function LoginPage() {
               Sign in with Google
             </button>
           </form>
+
+          {demoEnabled && (
+            <div className="mt-6 pt-6 border-t border-slate-700">
+              <p className="text-slate-400 text-xs mb-3 text-center">Or sign in with demo account</p>
+              <DemoLoginForm defaultEmail={demoEmail} />
+            </div>
+          )}
         </div>
 
         <p className="text-center text-xs text-slate-500 mt-6">

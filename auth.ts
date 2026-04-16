@@ -1,11 +1,35 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 
 // Bypass is gated on NODE_ENV=development so it's a no-op in production even if the env var is set.
 const isDevBypassEnabled = process.env.NODE_ENV === "development" && process.env.DEV_AUTH_BYPASS === "true";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [Google],
+  trustHost: true,
+  providers: [
+    Google,
+    Credentials({
+      id: "demo",
+      name: "Demo Login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const demoEmail = process.env.DEMO_LOGIN_EMAIL ?? "demo@verifyrent.app";
+        const demoPassword = process.env.DEMO_LOGIN_PASSWORD;
+        if (
+          demoPassword &&
+          credentials?.email === demoEmail &&
+          credentials?.password === demoPassword
+        ) {
+          return { id: "demo-user", name: "Demo User", email: demoEmail };
+        }
+        return null;
+      },
+    }),
+  ],
   pages: {
     signIn: "/login",
   },

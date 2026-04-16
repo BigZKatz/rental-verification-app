@@ -115,7 +115,7 @@ export default async function DashboardPage() {
             <ShieldCheck className="w-8 h-8 mb-3 opacity-80" />
             <h3 className="font-semibold text-lg mb-1">Start Verification</h3>
             <p className="text-blue-100 text-sm mb-4">Review rental history, verify landlords, and surface fraud flags fast.</p>
-            <Link href="/applications" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+            <Link href="/verify" className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
               Open queue <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

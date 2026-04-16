@@ -32,7 +32,7 @@ const integrations: Integration[] = [
     description: "Required for staff login. Create credentials at Google Cloud Console.",
     vars: [
       { key: "AUTH_SECRET", label: "Auth secret (run: npx auth secret)", secret: true },
-      { key: "AUTH_GOOGLE_ID", label: "Google OAuth Client ID" },
+      { key: "AUTH_GOOGLE_ID", label: "Google OAuth Client ID", secret: true },
       { key: "AUTH_GOOGLE_SECRET", label: "Google OAuth Client Secret", secret: true },
     ],
   },

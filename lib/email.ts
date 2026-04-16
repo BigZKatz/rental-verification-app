@@ -1,7 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.EMAIL_FROM ?? "VerifyRent <noreply@verifyrent.com>";
+
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null;
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 /**
  * Notify staff that a landlord has submitted their verification form.
@@ -25,7 +29,8 @@ export async function sendStaffNotificationEmail({
   applicantUrl: string;
 }): Promise<void> {
   const notifyEmail = process.env.NOTIFY_EMAIL;
-  if (!process.env.RESEND_API_KEY || !notifyEmail) return;
+  const resend = getResend();
+  if (!resend || !notifyEmail) return;
 
   try {
     await resend.emails.send({
@@ -101,7 +106,8 @@ export async function sendLandlordVerificationEmail({
   applicantFirstName: string;
   verificationUrl: string;
 }): Promise<boolean> {
-  if (!process.env.RESEND_API_KEY) return false;
+  const resend = getResend();
+  if (!resend) return false;
 
   try {
     await resend.emails.send({

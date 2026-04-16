@@ -12,7 +12,7 @@ export default auth((req) => {
     nextUrl.pathname.startsWith("/api/auth") ||
     nextUrl.pathname.startsWith("/_next") ||
     nextUrl.pathname === "/login" ||
-    nextUrl.pathname.startsWith("/landlord")
+    nextUrl.pathname.startsWith("/landlord/")
   ) {
     return NextResponse.next();
   }
